@@ -1,6 +1,6 @@
 # QuantiFi 2026
 
-Team 1 is currently participating in **QuantiFi 2026**, organized by the University of Toronto Engineering Finance Association (UTEFA).
+Our Team is currently participating in **QuantiFi 2026**, organized by the University of Toronto Engineering Finance Association (UTEFA).
 
 QuantiFi is a limit-order-book / market-making algorithmic trading contest. Teams trade in a tick-level limit order book (LOB) simulation. It is a trading contest, not a stock pitch.
 
