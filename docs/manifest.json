@@ -1,0 +1,297 @@
+{
+  "peak": {
+    "id": "A+Si+P+T+J+C",
+    "config": {
+      "id": "A+Si+P+T+J+C",
+      "components": [
+        {
+          "id": "A50",
+          "plugin": "af",
+          "params": {
+            "a_cap": 50,
+            "f_cap": 50,
+            "a_clip": 5,
+            "f_clip": 2,
+            "f_edge": 6,
+            "f_exit": 0,
+            "f": false
+          },
+          "risk_caps": {
+            "AMETHYST": 50
+          },
+          "products": [
+            "AMETHYST"
+          ]
+        },
+        {
+          "id": "S_quad7_interior8_q50",
+          "params": {
+            "mode": "take",
+            "strikes": [
+              7000,
+              7200,
+              7300,
+              7400,
+              7500,
+              7600,
+              7750,
+              7900
+            ],
+            "smile": "quad",
+            "thr": 7.0,
+            "exit_band": 0.0,
+            "cap": 50,
+            "hedge_band": null,
+            "r_per_day": 0.0,
+            "tte_days": 8.0,
+            "min_fit": 4
+          },
+          "products": [
+            "LYCHEE",
+            "VOUCHER_6800",
+            "VOUCHER_7000",
+            "VOUCHER_7200",
+            "VOUCHER_7300",
+            "VOUCHER_7400",
+            "VOUCHER_7500",
+            "VOUCHER_7600",
+            "VOUCHER_7750",
+            "VOUCHER_7900",
+            "VOUCHER_8100"
+          ],
+          "risk_caps": {
+            "VOUCHER_7000": 50,
+            "VOUCHER_7200": 50,
+            "VOUCHER_7300": 50,
+            "VOUCHER_7400": 50,
+            "VOUCHER_7500": 50,
+            "VOUCHER_7600": 50,
+            "VOUCHER_7750": 50,
+            "VOUCHER_7900": 50
+          },
+          "plugin": "smile"
+        },
+        {
+          "id": "P_line50_gate_q50",
+          "plugin": "paper",
+          "params": {
+            "mode": "scaled_hysteresis",
+            "cap": 50,
+            "window": 50,
+            "entry": 0.05,
+            "exit": 0.02,
+            "order_gap": 4,
+            "clip": 50,
+            "fair_gate": true,
+            "forecast_horizon": 50,
+            "entry_depth": false
+          },
+          "risk_caps": {
+            "PAPER_LANTERNS": 50
+          },
+          "products": [
+            "PAPER_LANTERNS"
+          ]
+        },
+        {
+          "id": "T40_q50_original",
+          "plugin": "mr",
+          "params": {
+            "product": "TOFFEE_CAKE",
+            "fair": 5000,
+            "entry": 40,
+            "exit": 0,
+            "position_cap": 50,
+            "execution": "original"
+          },
+          "risk_caps": {
+            "TOFFEE_CAKE": 50
+          },
+          "products": [
+            "TOFFEE_CAKE"
+          ]
+        },
+        {
+          "id": "J80_q50_neighbor",
+          "plugin": "mr",
+          "params": {
+            "product": "JELLY",
+            "fair": 2000,
+            "entry": 80,
+            "exit": 0,
+            "position_cap": 50,
+            "execution": "original"
+          },
+          "risk_caps": {
+            "JELLY": 50
+          },
+          "products": [
+            "JELLY"
+          ]
+        },
+        {
+          "id": "C_ema_q40_capacity",
+          "plugin": "tell",
+          "params": {
+            "mode": "tsmom",
+            "product": "TELLURIUM",
+            "signal": "ema",
+            "fast": 250,
+            "slow": 1500,
+            "thr": 0.0,
+            "exec": "active",
+            "sample": 10,
+            "cap": 40
+          },
+          "risk_caps": {
+            "TELLURIUM": 40
+          },
+          "products": [
+            "TELLURIUM"
+          ]
+        }
+      ]
+    },
+    "file": "/Users/charles/Desktop/UofT ECE/project/QuantiFi/Codex/research/strategy_complementarity_20261028/candidates/final_v3/QuantiFi_peak_research.py",
+    "sha256": "1f22bae1b8b4df5d22026dab426338755bed5aa87674df302ee48ef8585822fd",
+    "status": "RESEARCH ONLY; no automatic promotion"
+  },
+  "robust": {
+    "id": "AF+Si7+Pr+T+J",
+    "config": {
+      "id": "AF+Si7+Pr+T+J",
+      "components": [
+        {
+          "id": "AF_Fexit0",
+          "plugin": "af",
+          "params": {
+            "a_cap": 50,
+            "f_cap": 50,
+            "a_clip": 5,
+            "f_clip": 2,
+            "f_edge": 6,
+            "f_exit": 0
+          },
+          "risk_caps": {
+            "AMETHYST": 50,
+            "VOUCHER_7500": 50
+          },
+          "products": [
+            "AMETHYST",
+            "LYCHEE",
+            "VOUCHER_7400",
+            "VOUCHER_7500",
+            "VOUCHER_7600"
+          ]
+        },
+        {
+          "id": "S_quad7_interior7_q50",
+          "params": {
+            "mode": "take",
+            "strikes": [
+              7000,
+              7200,
+              7300,
+              7400,
+              7600,
+              7750,
+              7900
+            ],
+            "smile": "quad",
+            "thr": 7.0,
+            "exit_band": 0.0,
+            "cap": 50,
+            "hedge_band": null,
+            "r_per_day": 0.0,
+            "tte_days": 8.0,
+            "min_fit": 4
+          },
+          "products": [
+            "LYCHEE",
+            "VOUCHER_6800",
+            "VOUCHER_7000",
+            "VOUCHER_7200",
+            "VOUCHER_7300",
+            "VOUCHER_7400",
+            "VOUCHER_7500",
+            "VOUCHER_7600",
+            "VOUCHER_7750",
+            "VOUCHER_7900",
+            "VOUCHER_8100"
+          ],
+          "risk_caps": {
+            "VOUCHER_7000": 50,
+            "VOUCHER_7200": 50,
+            "VOUCHER_7300": 50,
+            "VOUCHER_7400": 50,
+            "VOUCHER_7600": 50,
+            "VOUCHER_7750": 50,
+            "VOUCHER_7900": 50
+          },
+          "plugin": "smile"
+        },
+        {
+          "id": "P_H60_q50",
+          "plugin": "paper",
+          "params": {
+            "mode": "scaled_hysteresis",
+            "cap": 50,
+            "window": 60,
+            "entry": 0.05,
+            "exit": 0.02,
+            "order_gap": 4,
+            "clip": 50,
+            "fair_gate": false,
+            "forecast_horizon": 50,
+            "entry_depth": false
+          },
+          "risk_caps": {
+            "PAPER_LANTERNS": 50
+          },
+          "products": [
+            "PAPER_LANTERNS"
+          ]
+        },
+        {
+          "id": "T40_q50_original",
+          "plugin": "mr",
+          "params": {
+            "product": "TOFFEE_CAKE",
+            "fair": 5000,
+            "entry": 40,
+            "exit": 0,
+            "position_cap": 50,
+            "execution": "original"
+          },
+          "risk_caps": {
+            "TOFFEE_CAKE": 50
+          },
+          "products": [
+            "TOFFEE_CAKE"
+          ]
+        },
+        {
+          "id": "J80_q50_neighbor",
+          "plugin": "mr",
+          "params": {
+            "product": "JELLY",
+            "fair": 2000,
+            "entry": 80,
+            "exit": 0,
+            "position_cap": 50,
+            "execution": "original"
+          },
+          "risk_caps": {
+            "JELLY": 50
+          },
+          "products": [
+            "JELLY"
+          ]
+        }
+      ]
+    },
+    "file": "/Users/charles/Desktop/UofT ECE/project/QuantiFi/Codex/research/strategy_complementarity_20261028/candidates/final_v3/QuantiFi_robust_research.py",
+    "sha256": "baa9ef297abe814331e864391217812982111213a6e52837d21b58a8b26ebe00",
+    "status": "RESEARCH ONLY; no automatic promotion"
+  }
+}
