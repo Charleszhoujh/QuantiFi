@@ -1,0 +1,455 @@
+[
+  {
+    "id": "D500_e20_q50",
+    "file": "/Users/charles/Desktop/UofT ECE/project/QuantiFi/Codex/research/peanut_butter_20261029/candidates/research_v2/D500_e20_q50.py",
+    "sha256": "19977298e59fb6dfc2fef0d84de8596082cde8483074efb7b52d953ed3273e55",
+    "config": {
+      "id": "D500_e20_q50",
+      "components": [
+        {
+          "id": "D500_e20_q50",
+          "plugin": "pb",
+          "params": {
+            "mode": "D",
+            "anchor_hl": 500,
+            "sd_hl": 1000,
+            "warmup": 300,
+            "entry": 2.0,
+            "max_hold": 1000,
+            "cap": 50
+          },
+          "risk_caps": {
+            "PEANUT_BUTTER": 50
+          },
+          "products": [
+            "PEANUT_BUTTER"
+          ]
+        }
+      ]
+    },
+    "status": "local research not adopted or submitted"
+  },
+  {
+    "id": "pair_return_h1000_q50",
+    "file": "/Users/charles/Desktop/UofT ECE/project/QuantiFi/Codex/research/peanut_butter_20261029/candidates/research_v2/pair_return_h1000_q50.py",
+    "sha256": "40c56a6bafa70ec8d1f2341d65cbffe229e2bcd746b76297f23e9c0a02bdd6c7",
+    "config": {
+      "id": "pair_return_h1000_q50",
+      "components": [
+        {
+          "id": "pair_return_h1000_q50",
+          "plugin": "pb",
+          "params": {
+            "mode": "pair_return",
+            "anchor_hl": 500,
+            "sd_hl": 1000,
+            "warmup": 1000,
+            "entry": 1.5,
+            "max_hold": 1000,
+            "cap": 50,
+            "pair_hl": 1000
+          },
+          "risk_caps": {
+            "PEANUT_BUTTER": 50
+          },
+          "products": [
+            "PEANUT_BUTTER",
+            "JELLY"
+          ]
+        }
+      ]
+    },
+    "status": "local research not adopted or submitted"
+  },
+  {
+    "id": "final_v4__plus_D500_e20_q50",
+    "file": "/Users/charles/Desktop/UofT ECE/project/QuantiFi/Codex/research/peanut_butter_20261029/candidates/research_v2/final_v4__plus_D500_e20_q50.py",
+    "sha256": "0e05e31e73df54fa31e4ddffcfe4b7681b389658646c791db6e2a92543ec884c",
+    "config": {
+      "id": "final_v4__plus_D500_e20_q50",
+      "components": [
+        {
+          "id": "A50",
+          "plugin": "af",
+          "params": {
+            "a_cap": 50,
+            "f_cap": 50,
+            "a_clip": 5,
+            "f_clip": 2,
+            "f_edge": 6,
+            "f_exit": 0,
+            "f": false
+          },
+          "risk_caps": {
+            "AMETHYST": 50
+          },
+          "products": [
+            "AMETHYST"
+          ]
+        },
+        {
+          "id": "S_quad7_interior8_q50",
+          "params": {
+            "mode": "take",
+            "strikes": [
+              7000,
+              7200,
+              7300,
+              7400,
+              7500,
+              7600,
+              7750,
+              7900
+            ],
+            "smile": "quad",
+            "thr": 7.0,
+            "exit_band": 0.0,
+            "cap": 50,
+            "hedge_band": null,
+            "r_per_day": 0.0,
+            "tte_days": 8.0,
+            "min_fit": 4
+          },
+          "products": [
+            "LYCHEE",
+            "VOUCHER_6800",
+            "VOUCHER_7000",
+            "VOUCHER_7200",
+            "VOUCHER_7300",
+            "VOUCHER_7400",
+            "VOUCHER_7500",
+            "VOUCHER_7600",
+            "VOUCHER_7750",
+            "VOUCHER_7900",
+            "VOUCHER_8100"
+          ],
+          "risk_caps": {
+            "VOUCHER_7000": 50,
+            "VOUCHER_7200": 50,
+            "VOUCHER_7300": 50,
+            "VOUCHER_7400": 50,
+            "VOUCHER_7500": 50,
+            "VOUCHER_7600": 50,
+            "VOUCHER_7750": 50,
+            "VOUCHER_7900": 50
+          },
+          "plugin": "smile"
+        },
+        {
+          "id": "P_line50_gate_q50",
+          "plugin": "paper",
+          "params": {
+            "mode": "scaled_hysteresis",
+            "cap": 50,
+            "window": 50,
+            "entry": 0.05,
+            "exit": 0.02,
+            "order_gap": 4,
+            "clip": 50,
+            "fair_gate": true,
+            "forecast_horizon": 50,
+            "entry_depth": false
+          },
+          "risk_caps": {
+            "PAPER_LANTERNS": 50
+          },
+          "products": [
+            "PAPER_LANTERNS"
+          ]
+        },
+        {
+          "id": "T40_q50_original",
+          "plugin": "mr",
+          "params": {
+            "product": "TOFFEE_CAKE",
+            "fair": 5000,
+            "entry": 40,
+            "exit": 0,
+            "position_cap": 50,
+            "execution": "original"
+          },
+          "risk_caps": {
+            "TOFFEE_CAKE": 50
+          },
+          "products": [
+            "TOFFEE_CAKE"
+          ]
+        },
+        {
+          "id": "J80_q50_neighbor",
+          "plugin": "mr",
+          "params": {
+            "product": "JELLY",
+            "fair": 2000,
+            "entry": 80,
+            "exit": 0,
+            "position_cap": 50,
+            "execution": "original"
+          },
+          "risk_caps": {
+            "JELLY": 50
+          },
+          "products": [
+            "JELLY"
+          ]
+        },
+        {
+          "id": "C_ema_q40_capacity",
+          "plugin": "tell",
+          "params": {
+            "mode": "tsmom",
+            "product": "TELLURIUM",
+            "signal": "ema",
+            "fast": 250,
+            "slow": 1500,
+            "thr": 0.0,
+            "exec": "active",
+            "sample": 10,
+            "cap": 40
+          },
+          "risk_caps": {
+            "TELLURIUM": 40
+          },
+          "products": [
+            "TELLURIUM"
+          ]
+        },
+        {
+          "id": "passive_implied_w2",
+          "plugin": "passive",
+          "params": {
+            "mode": "implied",
+            "width": 2,
+            "skew": 2,
+            "max_hold": 0,
+            "position_cap": 20
+          },
+          "risk_caps": {
+            "PINK_PEARLS": 20
+          },
+          "products": [
+            "BLACK_PEARLS",
+            "BLUE_PEARLS",
+            "GOLDEN_PEARLS",
+            "PINK_PEARLS",
+            "WHITE_PEARLS"
+          ]
+        },
+        {
+          "id": "D500_e20_q50",
+          "plugin": "pb",
+          "params": {
+            "mode": "D",
+            "anchor_hl": 500,
+            "sd_hl": 1000,
+            "warmup": 300,
+            "entry": 2.0,
+            "max_hold": 1000,
+            "cap": 50
+          },
+          "risk_caps": {
+            "PEANUT_BUTTER": 50
+          },
+          "products": [
+            "PEANUT_BUTTER"
+          ]
+        }
+      ]
+    },
+    "status": "local research not adopted or submitted"
+  },
+  {
+    "id": "tell_breakout__plus_D500_e20_q50",
+    "file": "/Users/charles/Desktop/UofT ECE/project/QuantiFi/Codex/research/peanut_butter_20261029/candidates/research_v2/tell_breakout__plus_D500_e20_q50.py",
+    "sha256": "cd85444123fdcc8e04b6878c24594303d9d8a96326ba1b8ce64c0c7bfb2d32d8",
+    "config": {
+      "id": "tell_breakout__plus_D500_e20_q50",
+      "components": [
+        {
+          "id": "A50",
+          "plugin": "af",
+          "params": {
+            "a_cap": 50,
+            "f_cap": 50,
+            "a_clip": 5,
+            "f_clip": 2,
+            "f_edge": 6,
+            "f_exit": 0,
+            "f": false
+          },
+          "risk_caps": {
+            "AMETHYST": 50
+          },
+          "products": [
+            "AMETHYST"
+          ]
+        },
+        {
+          "id": "S_quad7_interior8_q50",
+          "params": {
+            "mode": "take",
+            "strikes": [
+              7000,
+              7200,
+              7300,
+              7400,
+              7500,
+              7600,
+              7750,
+              7900
+            ],
+            "smile": "quad",
+            "thr": 7.0,
+            "exit_band": 0.0,
+            "cap": 50,
+            "hedge_band": null,
+            "r_per_day": 0.0,
+            "tte_days": 8.0,
+            "min_fit": 4
+          },
+          "products": [
+            "LYCHEE",
+            "VOUCHER_6800",
+            "VOUCHER_7000",
+            "VOUCHER_7200",
+            "VOUCHER_7300",
+            "VOUCHER_7400",
+            "VOUCHER_7500",
+            "VOUCHER_7600",
+            "VOUCHER_7750",
+            "VOUCHER_7900",
+            "VOUCHER_8100"
+          ],
+          "risk_caps": {
+            "VOUCHER_7000": 50,
+            "VOUCHER_7200": 50,
+            "VOUCHER_7300": 50,
+            "VOUCHER_7400": 50,
+            "VOUCHER_7500": 50,
+            "VOUCHER_7600": 50,
+            "VOUCHER_7750": 50,
+            "VOUCHER_7900": 50
+          },
+          "plugin": "smile"
+        },
+        {
+          "id": "P_line50_gate_q50",
+          "plugin": "paper",
+          "params": {
+            "mode": "scaled_hysteresis",
+            "cap": 50,
+            "window": 50,
+            "entry": 0.05,
+            "exit": 0.02,
+            "order_gap": 4,
+            "clip": 50,
+            "fair_gate": true,
+            "forecast_horizon": 50,
+            "entry_depth": false
+          },
+          "risk_caps": {
+            "PAPER_LANTERNS": 50
+          },
+          "products": [
+            "PAPER_LANTERNS"
+          ]
+        },
+        {
+          "id": "T40_q50_original",
+          "plugin": "mr",
+          "params": {
+            "product": "TOFFEE_CAKE",
+            "fair": 5000,
+            "entry": 40,
+            "exit": 0,
+            "position_cap": 50,
+            "execution": "original"
+          },
+          "risk_caps": {
+            "TOFFEE_CAKE": 50
+          },
+          "products": [
+            "TOFFEE_CAKE"
+          ]
+        },
+        {
+          "id": "J80_q50_neighbor",
+          "plugin": "mr",
+          "params": {
+            "product": "JELLY",
+            "fair": 2000,
+            "entry": 80,
+            "exit": 0,
+            "position_cap": 50,
+            "execution": "original"
+          },
+          "risk_caps": {
+            "JELLY": 50
+          },
+          "products": [
+            "JELLY"
+          ]
+        },
+        {
+          "id": "passive_implied_w2",
+          "plugin": "passive",
+          "params": {
+            "mode": "implied",
+            "width": 2,
+            "skew": 2,
+            "max_hold": 0,
+            "position_cap": 20
+          },
+          "risk_caps": {
+            "PINK_PEARLS": 20
+          },
+          "products": [
+            "BLACK_PEARLS",
+            "BLUE_PEARLS",
+            "GOLDEN_PEARLS",
+            "PINK_PEARLS",
+            "WHITE_PEARLS"
+          ]
+        },
+        {
+          "id": "TELLURIUM_swingbreak_plain_d10_q40",
+          "plugin": "causal_wave",
+          "params": {
+            "signal": "wave",
+            "product": "TELLURIUM",
+            "cap": 40,
+            "threshold": 10,
+            "mode": "swingbreak",
+            "fib": false
+          },
+          "risk_caps": {
+            "TELLURIUM": 40
+          },
+          "products": [
+            "TELLURIUM"
+          ]
+        },
+        {
+          "id": "D500_e20_q50",
+          "plugin": "pb",
+          "params": {
+            "mode": "D",
+            "anchor_hl": 500,
+            "sd_hl": 1000,
+            "warmup": 300,
+            "entry": 2.0,
+            "max_hold": 1000,
+            "cap": 50
+          },
+          "risk_caps": {
+            "PEANUT_BUTTER": 50
+          },
+          "products": [
+            "PEANUT_BUTTER"
+          ]
+        }
+      ]
+    },
+    "status": "local research not adopted or submitted"
+  }
+]
