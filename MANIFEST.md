@@ -48,11 +48,16 @@
 | `probes/probe_B_order_lifetime_PB.py` | `/Users/charles/Desktop/UofT ECE/project/QuantiFi/Claude/submission/probe/probe_B_lifetime_PB.py` | `03d8e41647524cf1ee6de19c0aafa73ed263ff1722f4498bc6b15984b584282a` | Portal probe B: order lifetime (orders live 1 tick) |
 | `probes/probe_C_order_lifetime_TELL.py` | `/Users/charles/Desktop/UofT ECE/project/QuantiFi/Claude/submission/probe/probe_C_lifetime_TELL_off100.py` | `91e35d8496fbef87bf9c7ba57ccca94b89b3d0f9de1ee3f89b3d885ea41ff133` | Portal probe C: order lifetime confirmation |
 | `probes/probe_D_own_trades_replay.py` | `box:/workspace/portal_upload/probe_D_own_trades.py` | `c942b7b631a18a37850c783ebb142be6a409a87e3b3553b72cd87fcf84d49c51` | Portal probe D: proved portal re-delivers own_trades (root cause of v8 bug) |
-| `abstract/Team1QuantiFi2026.pdf` | `box:/workspace/abstract/Team1QuantiFi2026.pdf` | `64bc2da68ef52e4c97cad103d1f12e32146b4f6258255825b1ef7b34ff7d620c` | Final 5-page abstract (Gemini r3 SATISFIED) |
+| `abstract/Team1QuantiFi2026.pdf` | `abstract/src/build_abstract.js` (docx → LibreOffice PDF) | `a231b5d0cf7097e904d006b264595aa4c1b77fba2625c2f3105ed95d4223b2a0` | Final 5-page abstract for v10 (rewritten 2026-10-31; earlier Gemini-reviewed version is in git history) |
 | `abstract/figs/fig1_cumulative_pnl.png` | `box:/workspace/abstract/figs/fig1_cumulative_pnl.png` | `fd6cb6978c6471e3056e1d3ce4b17997cda14b8fb6ecb865f322bb9c1b9b69e1` | Abstract figure |
 | `abstract/figs/fig2_family_by_day.png` | `box:/workspace/abstract/figs/fig2_family_by_day.png` | `09012024c32b05b8a44cf497f782fb44343fddf9611f030eeb7928d51c2ddb22` | Abstract figure |
 | `abstract/figs/fig2_pnl_by_product.png` | `box:/workspace/abstract/figs/fig2_pnl_by_product.png` | `f25380f9fab107dec71b4d56ec8b31299d3b92b12b60e179da9426083b66a119` | Abstract figure |
 | `abstract/figs/fig3_killswitch_products.png` | `box:/workspace/abstract/figs/fig3_killswitch_products.png` | `64a2979e2a62beeecb43afb7ce36d8902ed55dcccd6d7939252c763d518a3ed3` | Abstract figure |
+| `abstract/Team1QuantiFi2026.docx` | `abstract/src/build_abstract.js` | `b02cae296e77c91765effa5a7c0fc80f0d44013e669d699d5e8a434610c510d4` | Editable source of the abstract (imports into Google Docs) |
+| `abstract/figs/fig_architecture.png` | `abstract/src/make_figs.py` | `6c358defb2d655f3d2ea6fa6007597f060b2cf4f1b57ea887453e053a055e846` | Abstract Figure 1: system architecture |
+| `abstract/figs/fig_pnl_by_product.png` | `abstract/src/make_figs.py` | `43728fb17998f721c5c8de7f2a1a94b90da5d9d67fb1cb9c3055437030b3c770` | Abstract Figure 3: PnL by product, grouped by strategy family |
+| `abstract/src/build_abstract.js` | `written in repo` | `2cab3cd6743d35c127c11816de71af6e14201edb788aee19aa95070de5ad4901` | Builds the abstract .docx (text, tables, figure placement) |
+| `abstract/src/make_figs.py` | `written in repo` | `d98601270538f58ef14976f46dce8306c7370d0145ccaac3b54ee459b531190f` | Generates the new abstract figures from the official per-product PnL |
 | `abstract/reviews/gemini_review_r1.md` | `box:/workspace/abstract/review_r1.md` | `b9aa42986dd623bb96d5a43fc0f619acd227c53c38b56a93e75bc9802c012332` | Gemini abstract review round 1 |
 | `abstract/reviews/gemini_review_r2.md` | `box:/workspace/abstract/review_r2.md` | `811fa845eb909073af796b4ac115fa81437ba121f67112efe98de942ef4948a3` | Gemini abstract review round 2 |
 | `abstract/reviews/gemini_review_r3.md` | `box:/workspace/abstract/review_r3.md` | `7670600c5e08d123f56ab2b0b533cf029045860e6fec86eb00e75992d5294330` | Gemini abstract review round 3 |
