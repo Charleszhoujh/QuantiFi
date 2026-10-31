@@ -20,13 +20,23 @@ QuantiFi is a limit-order-book / market-making algorithmic trading contest. Team
 
 ## This repository
 
-This is Team 1’s workspace for the contest. The final submitted strategy is [`QuantiFi_Claude_v10_FROZEN.py`](QuantiFi_Claude_v10_FROZEN.py).
+This is Team 1’s workspace for the contest. The final submitted strategy is [`strategies/claude/07_claude_v10_FROZEN_final.py`](strategies/claude/07_claude_v10_FROZEN_final.py).
 
 Do not commit portal passwords, API keys, or other credentials.
 
+## Repository layout
+
+Every archived file is listed in [`MANIFEST.md`](MANIFEST.md) with its repo path, original path, sha256, and why it is kept.
+
+- [`strategies/`](strategies/) — frozen strategy milestones. Claude versions, including freeze manifests, are in [`strategies/claude/`](strategies/claude/). Codex candidates are in [`strategies/codex/`](strategies/codex/). The final submitted strategy is [`strategies/claude/07_claude_v10_FROZEN_final.py`](strategies/claude/07_claude_v10_FROZEN_final.py).
+- [`reports/`](reports/) — Codex and Claude research reports, workspace overviews, the rules review, and the Codex report PDFs.
+- [`research/`](research/) — research notes behind those milestones, split into [`research/codex/`](research/codex/) and [`research/claude/`](research/claude/).
+- [`probes/`](probes/) — portal probe scripts.
+- [`abstract/`](abstract/) — the Team 1 abstract ([`abstract/Team1QuantiFi2026.pdf`](abstract/Team1QuantiFi2026.pdf)), figures in [`abstract/figs/`](abstract/figs/), and review notes in [`abstract/reviews/`](abstract/reviews/).
+
 ## Final submitted strategy
 
-**v10** ([`QuantiFi_Claude_v10_FROZEN.py`](QuantiFi_Claude_v10_FROZEN.py)) is the team’s final submitted QuantiFi 2026 strategy.
+**v10** ([`strategies/claude/07_claude_v10_FROZEN_final.py`](strategies/claude/07_claude_v10_FROZEN_final.py)) is the team’s final submitted QuantiFi 2026 strategy.
 
 Official portal backtest result: **523,191.5 COINS** total, identical to the previous v9 run.
 

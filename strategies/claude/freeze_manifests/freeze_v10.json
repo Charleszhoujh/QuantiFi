@@ -1,0 +1,162 @@
+{
+ "frozen_at": "2026-10-31",
+ "file": "submission/v10/FROZEN/QuantiFi_Claude_v10_FROZEN.py",
+ "sha256": "fca6278c0d55abf8e4d1ceb994132d28db327ddac096e955d02d7d74d59f42f8",
+ "bytes": 186419,
+ "built_from": {
+  "v9_frozen": "submission/v9/FROZEN/QuantiFi_Claude_v9_FROZEN.py",
+  "v9_sha256": "024b2c92edab1ae3aa61ddeac416475eb82b8f02c6249862c0e79daabbf30b60",
+  "builder": "submission/v10/build_readable.py + submission/v10/HEADER.txt"
+ },
+ "composition": [
+  "v2 frozen: Codex 534k portfolio minus T40/J80 + research/N TOFFEE/JELLY blend 25+25 + trend kill switch k1.5 (TELL 20,275.5 / BASKET 40,680 / LANTERNS 765)",
+  "+ GOLDEN_PEARLS: research/L ap_as_skew2 A-S maker (EMA fair hl 20, skew 2, k_sigma 1, min half-width 1, size 10), position clipped to +-10 (research/T)"
+ ],
+ "products_traded": [
+  "AMETHYST",
+  "FRUIT_BASKET",
+  "GOLDEN_PEARLS",
+  "JELLY",
+  "MANGOSTEEN",
+  "PAPER_LANTERNS",
+  "PEANUT_BUTTER",
+  "PINK_PEARLS",
+  "TELLURIUM",
+  "TOFFEE_CAKE",
+  "VOUCHER_7000",
+  "VOUCHER_7200",
+  "VOUCHER_7300",
+  "VOUCHER_7400",
+  "VOUCHER_7500",
+  "VOUCHER_7600",
+  "VOUCHER_7750",
+  "VOUCHER_7900"
+ ],
+ "products_not_traded_with_reason": {
+  "WHITE/BLACK/BLUE_PEARLS": "research/K: contemporaneous co-movement only, 0/13 configs",
+  "DRAGONFRUIT/GRANADILLA": "Codex trend/MM/MR fragile or negative",
+  "LYCHEE": "research/H: 1.1-pt signal < ~2-pt half-spread",
+  "VOUCHER_6800/8100": "research/T: negative on dev days, synthetic wing tail"
+ },
+ "results_local_approx": {
+  "base": [
+   225130.0,
+   188395.0,
+   109666.0
+  ],
+  "cost": [
+   198187.0,
+   168129.0
+  ],
+  "strict": [
+   224547.5,
+   187487.0
+  ],
+  "next_tick": [
+   225444.0,
+   188130.0
+  ],
+  "take_only": [
+   222231.0,
+   186957.0
+  ],
+  "half": [
+   223443.5,
+   187537.0
+  ],
+  "fulldelay": [
+   225680.0,
+   190435.5
+  ],
+  "note": "v7 >= v6 in every scenario and day; kill switch never fires on real days"
+ },
+ "synthetic_60d": "not rerun for v5 (only post-kill execution differs from v4: mean -5,133, worst -135,686)",
+ "checks": {
+  "cold_start_identical": true,
+  "isolated_import_datamodel_only": true,
+  "robust_states_9": "all ok",
+  "errors": 0,
+  "traderData_max_bytes": 12200,
+  "known_deviation": "static check flags import types / exec / compile (Codex embedded-module pattern)"
+ },
+ "rejected_this_round": {
+  "PB tail protection": "research/S, all nets negative",
+  "TELLURIUM regime switch": "research/Q",
+  "TELLURIUM median MR": "research/P",
+  "graded kill / other thresholds": "research/R"
+ },
+ "open_items": [
+  "rename to the official Team##QuantiFi2026.py before submitting",
+  "write the abstract (<=5 pages)",
+  "no login / upload / submission performed"
+ ],
+ "change_vs_v3": [
+  "outer duplicate-callback guard (skip if stored _ts == state.timestamp), as the Codex root does",
+  "kill-switch flatten subtracts last tick's same-side flatten size (in-flight reservation)",
+  "behaviour identical to v3 whenever the kill switch does not fire: all 3 real days and 6 stress scenarios bit-identical"
+ ],
+ "kill_safety_tests": {
+  "unit": "research/V/test_kill_unit.py: 7/7 pass (user example, partial fill + residual expiry, opposite in-flight, expired residual, 2,000 random states never cross zero, limit, no-kill no-change); v4 fails 3 of the original 5",
+  "integration": "research/V/results/integration_v4_v5_r2.jsonl: forced kill, days -2/-1, after kill: 0 flips through zero and 0 reopenings under base, 1/2/3-tick delay, duplicate-callback A. |pos| can still grow 1-2 times under 2-3 tick delay from module orders sent before the kill (cannot be cancelled).",
+  "residual": "duplicate-callback B (identical input, both order sets executed) still fails for the whole strategy; depends on platform callback rules"
+ },
+ "residual_risk": "duplicate-callback B (two calls with identical input AND both order sets executed) breaks every target-position module (-666k/day locally, kill switch not involved); not defended.",
+ "debug_build": "submission/v5/debug/QuantiFi_Claude_v5_DEBUG.py",
+ "change_vs_v4": [
+  "kill switch remembers every order finally sent for a guarded product (module or switch) for 5 ticks, reduced by own_trades fills",
+  "flatten size = |position| - same-side possibly-working orders; never beyond zero (opposite-side in-flight ignored)",
+  "identical to v4 whenever the kill switch does not fire (3 real days per product, cost, full delay)"
+ ],
+ "change_vs_v5": [
+  "GOLDEN outer clip: remaining room floored at 0 (v5 turned a buy into a sell when |pos| > 10, e.g. pos 19 + buy 1 -> sell 9 at the bid)",
+  "no in-flight reservation added for GOLDEN. Order lifetime on the official platform is NOT specified (Wiki: unfilled remainder is 'left as an outstanding quote', duration not stated; PROTOCOL.md S6 is an assumption). Under the local one-tick assumption a 5-tick reservation cost 1,107 in review; under longer lifetimes GOLDEN can reach the official 20 (measured in 1-3 tick delay tests). Decision deferred until the lifetime is measured on the portal (probe: submission/probe/order_lifetime_probe.py)."
+ ],
+ "tests": "research/X/test_golden_clip.py: v5 fails 2/4, v6 4/4; v6 identical to v5 on 3 real days per product; delays 1-3 ticks: GOLDEN can still reach the official 20 (both versions), v6 -1,813 vs v5 -1,826..-1,886",
+ "change_vs_v6": [
+  "TOFFEE/JELLY execution: best level only, size capped at its visible volume, entries and exits (exec l1/l1); one-tick reservation kept. Signal unchanged."
+ ],
+ "full_replay_vs_v6": {
+  "delta_by_day": [
+   2488,
+   1332,
+   2245
+  ],
+  "three_day_total": 523191,
+  "other_16_products": "bit-identical",
+  "decomposition_3d": "take_edge +7,793, mark -1,728 -> +6,065 (78%); engine identity holds; end positions, units, max |pos| identical; errors 0"
+ },
+ "execution_extremes": "V1 max shortfall vs target 44-45 lots TOFFEE / 20-21 JELLY (V0 15-28 / 14-25); 10-42 ticks/day with shortfall >10; longest lag 4-7 ticks; position path differs from v6 on 46-101 ticks/day. All caught up within the tested paths; not shown safe for sudden reversals or thinner books.",
+ "reservation_value": "TOFFEE+JELLY under order delay 1/2 ticks: V1 38,588/35,970 and 34,489/28,939; no-reservation V5 34,278/28,537 and -9,042/-14,436; v6 (V0) at 2 ticks -11,235/-46,902. Cost of reservation without delay: 362 over 3 days.",
+ "evidence": "research/Z (variants, PREREG), research/Z2 (full replay, extremes, delay)",
+ "known_open": [
+  "GOLDEN in-flight orders not managed (portal probes: orders live one tick, so not expected to matter)",
+  "duplicate-callback B unfixable",
+  "portal total ~337k vs local 517k for v3: unexplained, per-product portal comparison pending"
+ ],
+ "change_vs_v7": [
+  "lossless traderData compaction at the outer boundary: nested JSON strings stored as objects, write-only Codex 'diagnostic' fields dropped (never read), long keys mapped to short codes (fixed table of 147 keys); legacy v7 format still readable"
+ ],
+ "why": "portal-style sticky own_trades replay: v8 = 147,574 / 107,089 / 78,260 (332,924, matches portal ~333k) because re-sent fills were booked repeatedly and tripped the kill switch; v9 = 225,130 / 188,395 / 109,666.5 under normal, sticky own_trades, and sticky own+market trades",
+ "verification": {
+  "orders_and_fills_identical_to_v9": "days -2/-1/0",
+  "sticky_own_trades": "identical (225,130 / 188,395 / 109,666.5)",
+  "traderData_peak": "identical (<= 4,979)",
+  "tests": "cold start identical, isolated import, 9 robust states, kill unit 8/8, golden clip 4/4",
+  "timing": "p99 4.1-7.8 ms"
+ },
+ "change_vs_v8": [
+  "kill switch books an own fill only if its timestamp is newer than the newest fill already booked for that product (the portal re-sends the latest own_trades batch every callback until replaced; reported by the user's reviewer)"
+ ],
+ "portal_semantics_learned": {
+  "data": "days -2/-1/0 summed (probe A = 122)",
+  "order_lifetime": "one tick (probes B/C = 0)",
+  "traderData_cap": "~8.5 KB, state reset beyond (user)",
+  "own_trades": "latest batch re-sent until replaced (reviewer)"
+ },
+ "portal_verified": "not yet (v9 verified at 523,191.5; v10 expected identical)",
+ "change_vs_v9": [
+  "readability only: every exec'd source string turned into real code inside a builder function (same per-module namespace and injected names); no exec/compile/types.ModuleType",
+  "unused plugin 'mr' (old fixed-anchor TOFFEE/JELLY) not built; dead default load_plugin (imported Codex research packages, always overridden) removed",
+  "reader's guide in the module docstring (architecture, product map, risk controls, measured portal facts)"
+ ]
+}
