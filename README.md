@@ -20,7 +20,7 @@ Team 1's submission to **QuantiFi 2026**, the limit-order-book market-making con
 
 A note on naming: we uploaded the code as `Team1QuantiFi2026.py`. The abstract header calls it `Team01QuantiFi2026.py`; both names refer to this same file.
 
-The submitted code is **v10**, a readability rewrite of **v9**. On all three provided days v10 sends the same orders and gets the same fills as v9, and both score 523,191.5 on the official portal. Both are also kept in [`strategies/claude/`](strategies/claude/) (`06_…v9…` and `07_…v10…`). `Team1QuantiFi2026.py` is a byte-for-byte copy of the v10 file.
+The submitted code is **v10**, a readability rewrite of **v9**. On all three provided days v10 sends the same orders and gets the same fills as v9, and both score 523,191.5 on the official portal. [`Team1QuantiFi2026.py`](Team1QuantiFi2026.py) is a byte-for-byte copy of the v10 file. Earlier frozen copies of v9 and v10 are kept under [`strategies/`](strategies/).
 
 ## Result
 
