@@ -1,74 +1,54 @@
-# QuantiFi 2026
+# QuantiFi 2026 — Team 1
 
-Our Team is currently participating in **QuantiFi 2026**, organized by the University of Toronto Engineering Finance Association (UTEFA).
+Team 1's submission to **QuantiFi 2026**, the limit-order-book market-making contest run by the University of Toronto Engineering Finance Association ([UTEFA](https://www.utefa.com/quantifi)). Teams trade a tick-level order-book simulation of 26 products.
 
-QuantiFi is a limit-order-book / market-making algorithmic trading contest. Teams trade in a tick-level limit order book (LOB) simulation. It is a trading contest, not a stock pitch.
-
-## Links
-
-- Competition: [https://www.utefa.com/quantifi](https://www.utefa.com/quantifi)
-- UTEFA: [https://www.utefa.com/](https://www.utefa.com/)
+**Status:** submitted Sunday, November 1, 2026 (Toronto time). Finalists are expected to be announced in early November.
 
 ## Team
 
-**Team 1** (official UTEFA assignment).
+- Leena Li
+- Charles Zhou
+- Su Pu
+- Chloe Gao
 
-- leena.li@mail.utoronto.ca
-- christina.pu@mail.utoronto.ca
-- chloee.gao@mail.utoronto.ca
-- Chaz070815@gmail.com
+## What we submitted
 
-## This repository
+| Item | File |
+| --- | --- |
+| Trading algorithm | [`Team1QuantiFi2026.py`](Team1QuantiFi2026.py) |
+| 5-page abstract (Letter, PDF) | [`abstract/Team1QuantiFi2026.pdf`](abstract/Team1QuantiFi2026.pdf) (HTML source: [`abstract/final.html`](abstract/final.html)) |
 
-This is Team 1’s workspace for the contest. The final submitted strategy is [`strategies/claude/07_claude_v10_FROZEN_final.py`](strategies/claude/07_claude_v10_FROZEN_final.py).
+A note on naming: we uploaded the code as `Team1QuantiFi2026.py`. The abstract header calls it `Team01QuantiFi2026.py`; both names refer to this same file.
 
-Do not commit portal passwords, API keys, or other credentials.
+The submitted code is **v10**, a readability rewrite of **v9**. On all three provided days v10 sends the same orders and gets the same fills as v9, and both score 523,191.5 on the official portal. Both are also kept in [`strategies/claude/`](strategies/claude/) (`06_…v9…` and `07_…v10…`). `Team1QuantiFi2026.py` is a byte-for-byte copy of the v10 file.
 
-## Repository layout
+## Result
 
-Every archived file is listed in [`MANIFEST.md`](MANIFEST.md) with its repo path, original path, sha256, and why it is kept.
+Official portal backtest: **523,191.5 Coins**.
 
-- [`strategies/`](strategies/) — frozen strategy milestones. Claude versions, including freeze manifests, are in [`strategies/claude/`](strategies/claude/). Codex candidates are in [`strategies/codex/`](strategies/codex/). The final submitted strategy is [`strategies/claude/07_claude_v10_FROZEN_final.py`](strategies/claude/07_claude_v10_FROZEN_final.py).
-- [`reports/`](reports/) — Codex and Claude research reports, workspace overviews, the rules review, and the Codex report PDFs.
-- [`research/`](research/) — research notes behind those milestones, split into [`research/codex/`](research/codex/) and [`research/claude/`](research/claude/).
-- [`probes/`](probes/) — portal probe scripts.
-- [`abstract/`](abstract/) — the Team 1 abstract ([`abstract/Team1QuantiFi2026.pdf`](abstract/Team1QuantiFi2026.pdf)), figures in [`abstract/figs/`](abstract/figs/), and review notes in [`abstract/reviews/`](abstract/reviews/).
-
-## Final submitted strategy
-
-**v10** ([`strategies/claude/07_claude_v10_FROZEN_final.py`](strategies/claude/07_claude_v10_FROZEN_final.py)) is the team’s final submitted QuantiFi 2026 strategy.
-
-Official portal backtest result: **523,191.5 COINS** total, identical to the previous v9 run.
-
-| Day | PnL (COINS) |
+| Day | PnL (Coins) |
 | --- | ---: |
 | −2 | 225,130 |
 | −1 | 188,395 |
 | 0 | 109,666.5 |
 | **Total** | **523,191.5** |
 
-These results are in-sample on the 3 provided days (day −2, day −1, and day 0).
+These are in-sample results on the three provided days. The contest's hidden evaluation days may differ.
 
-## Strategy modules
+## Strategy overview
 
-| Product(s) | Module | Method | Key params |
-| --- | --- | --- | --- |
-| AMETHYST | A50 (af) | Fixed-fair market maker around 10000 | cap 50, clip 5 |
-| LYCHEE + VOUCHER_7000…7900 (8 strikes) | smile RV (S_quad7) | Fit quadratic IV smile across strikes; take vouchers mispriced vs fit; LYCHEE/6800/8100 not traded | thr 7.0, tte 8d, min_fit 4, cap 50 each |
-| PAPER_LANTERNS | P_line50_gate | Rolling-line (window 50) forecast, scaled hysteresis entry/exit with fair gate | entry .05 / exit .02, horizon 50, cap 50 |
-| PINK_PEARLS | passive_implied_w2 | Passive quotes around fair implied from other pearls | width 2, skew 2, cap 20 |
-| GOLDEN_PEARLS | _GP mm_as | Avellaneda-Stoikov style maker, const fair, inventory skew | skew 2, k_sigma 1, min_hw 1, size 10, GP_CAP 10 |
-| TELLURIUM | swingbreak (causal_wave) | Swing-high/low breakout trend | threshold 10, cap 40 |
-| PEANUT_BUTTER | H3 pb2 | EMA-anchor z-score mean reversion, frozen-anchor exit | anchor_hl 500, sd_hl 1000, warmup 300, z 2, max_hold 1000, cap 50 |
-| FRUIT_BASKET (+DRAGONFRUIT/GRANADILLA as signal) | H2 own-basket trend | Trend on basket's own price | cap 40 |
-| MANGOSTEEN | MR500_z2 | EMA(hl 500) mean reversion, z 2 | cap 40 |
-| TOFFEE_CAKE, JELLY | TJ blend_25_25 | Per product 25 lots fixed-centre MR (5000/±40; 2000/±80) + 25 lots EMA(hl 3000) anchor z≥2; execute at best level (l1), reservation | cap 25+25 |
+The algorithm is a portfolio of independent modules. Each product is owned by exactly one module, and a shared risk layer enforces position limits and accounts for orders already in flight. 18 products are traded and 8 are deliberately left alone.
 
-Kill switch on TELLURIUM, FRUIT_BASKET, and PAPER_LANTERNS. It tracks intraday PnL as cash from own fills plus position times mid. If peak minus that PnL exceeds KILL_DD (20,275.5 / 40,680 / 765, which is 1.5× the max intraday drawdown on days −2 and −1), the product is flattened by crossing the touch and stopped for the day. In-flight orders are remembered for INFLIGHT_TICKS=5. Flatten size is the absolute position minus same-side working orders, so the flatten does not cross through zero.
+- **Market making:** quotes around a known or implied fair value: AMETHYST (fixed fair value 10,000), PINK_PEARLS (fair value implied from the other pearls), and GOLDEN_PEARLS (constant-fair maker with inventory skew).
+- **Voucher pricing with a volatility smile:** for each voucher strike (7000–7900), fit a quadratic implied-volatility smile to the *other* strikes, price the strike with Black–Scholes, and trade when the market deviates from the fit by more than a threshold. The underlying, LYCHEE, and the edge strikes 6800/8100 are not traded.
+- **Mean reversion:** z-score against slow exponential anchors for PEANUT_BUTTER and MANGOSTEEN. TOFFEE_CAKE and JELLY each blend a fixed-centre leg with an EMA-anchor leg.
+- **Trend following:** a rolling-regression slope with a fair-value gate (PAPER_LANTERNS), confirmed swing-pivot breakouts (TELLURIUM), and the basket's own trend (FRUIT_BASKET).
+- **Drawdown guard (kill switch):** on the three trend products, intraday PnL is tracked from our own fills plus position marked to mid. If the drop from the day's peak exceeds 1.5× the worst intraday drawdown seen on days −2 and −1, the position is flattened and the product stops trading for the day.
+- **Local backtester aligned with the portal:** we calibrated a local simulator until it reproduced the portal's PnL exactly. That let us test changes quickly and trust the numbers in the abstract.
 
-## Per-product PnL
+The abstract covers the method, parameters, and per-product results in detail.
 
-Portal PnL by product (COINS) for the same backtest. These results are in-sample on the 3 provided days.
+### Per-product PnL (portal, Coins)
 
 | Product | Day −2 | Day −1 | Day 0 | Total |
 | --- | ---: | ---: | ---: | ---: |
@@ -78,26 +58,30 @@ Portal PnL by product (COINS) for the same backtest. These results are in-sample
 | JELLY | 26,562 | 19,077 | 9,431 | 55,070 |
 | TOFFEE_CAKE | 12,501 | 18,449 | 18,182 | 49,132 |
 | PAPER_LANTERNS | 15,223 | 17,417 | 13,617 | 46,257 |
-| VOUCHER_7400 | 9,248 | 10,102 | 7,922 | 27,272 |
-| VOUCHER_7300 | 12,495 | 2,824 | 7,717 | 23,036 |
-| VOUCHER_7500 | 10,406 | 7,843 | 4,024 | 22,273 |
-| VOUCHER_7600 | 9,657 | 4,256 | 3,438 | 17,351 |
-| VOUCHER_7750 | 4,437 | 2,758 | 2,065 | 9,260 |
-| VOUCHER_7000 | 3,534 | 130 | 5,308 | 8,972 |
-| VOUCHER_7200 | 4,129 | 1,732 | 2,160 | 8,021 |
-| VOUCHER_7900 | 2,286 | 653 | 1,005 | 3,944 |
+| VOUCHER_7000–7900 (8 strikes) | 56,192 | 30,298 | 33,639 | 120,129 |
 | MANGOSTEEN | −538 | 1,092 | 3,127 | 3,681 |
 | PINK_PEARLS | 2,289 | 429 | 119 | 2,837 |
 | AMETHYST | 527 | 608 | 477.5 | 1,612.5 |
 | GOLDEN_PEARLS | 83 | 401 | 136 | 620 |
-| LYCHEE | 0 | 0 | 0 | 0 |
-| GRANADILLA | 0 | 0 | 0 | 0 |
-| DRAGONFRUIT | 0 | 0 | 0 | 0 |
-| BLUE_PEARLS | 0 | 0 | 0 | 0 |
-| BLACK_PEARLS | 0 | 0 | 0 | 0 |
-| VOUCHER_6800 | 0 | 0 | 0 | 0 |
-| VOUCHER_8100 | 0 | 0 | 0 | 0 |
-| WHITE_PEARLS | 0 | 0 | 0 | 0 |
-| **TOTAL** | **225,130** | **188,395** | **109,666.5** | **523,191.5** |
+| **Total** | **225,130** | **188,395** | **109,666.5** | **523,191.5** |
 
-Non-traded (0): LYCHEE, GRANADILLA, DRAGONFRUIT, BLUE_PEARLS, BLACK_PEARLS, WHITE_PEARLS, VOUCHER_6800, VOUCHER_8100. 18 products traded.
+Not traded: LYCHEE, GRANADILLA, DRAGONFRUIT (used only as signals), BLUE/BLACK/WHITE_PEARLS, VOUCHER_6800, VOUCHER_8100.
+
+## Repository layout
+
+- [`Team1QuantiFi2026.py`](Team1QuantiFi2026.py): the submitted algorithm.
+- [`abstract/`](abstract/): the submitted abstract PDF, its HTML source, and its figures.
+- [`strategies/`](strategies/): frozen milestones from the research process, with freeze manifests.
+- [`research/`](research/), [`reports/`](reports/): research notes and reports behind those milestones.
+- [`probes/`](probes/): small scripts used to learn how the portal behaves.
+- [`MANIFEST.md`](MANIFEST.md): index of archived files.
+
+Do not commit portal passwords, API keys, or other credentials.
+
+## Lessons
+
+- **Make the backtest match the venue first.** Matching the portal exactly paid for itself many times over. Every number we reported can be traced to a portal log.
+- **Cut what you can't defend.** Dropping products and strikes that did not survive testing helped more than adding parameters.
+- **Keep one canonical file.** Too many near-identical versions and filenames cost us time at the end. Freeze one artifact with one name early.
+- **Write alongside the research.** We froze the strategy late, so the abstract went through many compression rounds right up to the deadline.
+- **Out-of-sample evidence was thin.** Some modules did not pass leave-one-day-out validation. With only three days of data, part of the PnL is likely luck, and we treat it as a risk.

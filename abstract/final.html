@@ -1,0 +1,169 @@
+<html><head><meta charset="utf-8"><style>@page{size:Letter;margin:0.6in 0.65in}body{font-family:'Liberation Serif','Times New Roman',serif;font-size:10pt;line-height:1.17;color:#111}
+h1{font-size:18pt;text-align:center;margin:0 0 2pt}h1+p{text-align:center;margin-top:0}h2{font-size:13pt;border-bottom:1px solid #999;margin:7pt 0 2pt}h3{font-size:11.5pt;margin:6pt 0 2pt;break-after:avoid;page-break-after:avoid}h2{break-after:avoid;page-break-after:avoid}
+p,li{text-align:justify}ul{margin:3pt 0;padding-left:18pt}li{margin:1pt 0}code{font-family:'Liberation Mono',monospace;font-size:9.5pt}h1,h2,h3,th,td,figcaption,code{font-family:inherit}code{font-family:'Liberation Mono',monospace}.eq img.eqimg{max-width:100%;max-height:none;vertical-align:middle}.eq{margin:4pt 0}
+table{border-collapse:collapse;width:100%;font-size:8pt;margin:4pt 0;page-break-inside:avoid}th,td{border:1px solid #bbb;padding:0.5pt 4pt}th{background:#eee}
+figure{margin:3pt 0;text-align:center;page-break-inside:avoid}img{max-width:88%;max-height:2.2in}figcaption{font-size:9.5pt;font-style:italic}
+p>em:only-child{font-size:9.5pt}.summary{border:1px solid #888;background:#f6f6f6;padding:5pt 8pt;margin:6pt 0;text-align:justify;font-size:10.5pt}.eq{text-align:center;margin:3pt 0;font-size:10.5pt}h1+p{text-align:center}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-0.25em}sup{top:-0.45em}code{line-height:inherit;padding:0;font-size:9.5pt}sup.ref{line-height:0;position:relative;font-size:7pt}</style></head><body><h1>A Multi-Module Limit-Order-Book Trading System</h1>
+<p><strong>Team 1 | QuantiFi 2026</strong> — Leena Li, Charles Zhou, Su Pu, Chloe Gao — code file <code>Team01QuantiFi2026.py</code></p>
+<div class="summary"><strong>Summary.</strong> Our strategy is a modular per-product portfolio that actively trades 18 of the 26 products with modules from five strategy families: market making, voucher implied-volatility smile relative value, EMA-anchored z-score mean reversion, trend following, and blended fixed-centre / adaptive-anchor mean reversion. On the official Portal backtest it earned <strong>523,191.5 COINS</strong> (225,130 / 188,395 / 109,666.5 on days −2 / −1 / 0), with largest portfolio intraday drawdowns of 15,404.5 / 14,445.5 / 35,672 COINS. All results are in-sample.</div>
+<h2>1. Architecture</h2>
+<p>Every product group gets its own causal module that turns order-book data into a <strong>target position</strong>; a shared execution layer converts targets into limit-safe orders (with in-flight order reservation for every module except <code>GOLDEN_PEARLS</code>, which has no cross-tick pending-order management), and a risk layer adds a drawdown kill switch on the trend products (Figure 1).</p>
+<figure><img src="figs/fig0_architecture.png" style="max-width:100%;max-height:2.45in"><figcaption style="font-size:9pt;font-style:italic">Figure 1. Our strategy: per-product modules, shared execution and risk layers.</figcaption></figure>
+<h2>2. Signal Mechanisms</h2>
+<h3>2.1 Evidence for the family assignment</h3>
+<p>On the Portal order books we measured the average quoted spread, the per-tick volatility of mid-price changes σ<sub>1</sub>, the lag-1 autocorrelation of mid changes ρ<sub>1</sub>, the 100-tick variance ratio VR<sub>100</sub> = Var(Δ<sub>100</sub>)/(100·Var(Δ<sub>1</sub>)) (below 1 indicates reversion, above 1 persistence; it describes only the 100-tick scale and is a diagnostic, not on its own sufficient to decide a product's family) and the average intraday high–low range (Table 1, averages over the three days).</p>
+<table><thead><tr><th>Product</th><th style="text-align:right">Spread</th><th style="text-align:right">σ<sub>1</sub></th><th style="text-align:right">ρ<sub>1</sub></th><th style="text-align:right">VR<sub>100</sub></th><th style="text-align:right">Range</th><th>Family</th></tr></thead><tbody>
+<tr><td>AMETHYST</td><td align=right>3.0</td><td align=right>0.50</td><td align=right>−0.50</td><td align=right>0.01</td><td align=right>1</td><td>Market making</td></tr>
+<tr><td>PINK_PEARLS</td><td align=right>4.0</td><td align=right>1.00</td><td align=right>−0.13</td><td align=right>0.76</td><td align=right>194</td><td>Market making (implied fair)</td></tr>
+<tr><td>GOLDEN_PEARLS</td><td align=right>3.0</td><td align=right>0.52</td><td align=right>−0.42</td><td align=right>2.26</td><td align=right>84</td><td>Market making (inventory skew)</td></tr>
+<tr><td>TOFFEE_CAKE</td><td align=right>14.1</td><td align=right>3.10</td><td align=right>−0.23</td><td align=right>0.45</td><td align=right>138</td><td>Blended MR</td></tr>
+<tr><td>JELLY</td><td align=right>11.0</td><td align=right>3.13</td><td align=right>−0.04</td><td align=right>1.09</td><td align=right>363</td><td>Blended MR</td></tr>
+<tr><td>PEANUT_BUTTER</td><td align=right>6.0</td><td align=right>4.79</td><td align=right>−0.01</td><td align=right>1.02</td><td align=right>574</td><td>EMA z-score MR</td></tr>
+<tr><td>MANGOSTEEN</td><td align=right>4.0</td><td align=right>2.48</td><td align=right>−0.03</td><td align=right>0.88</td><td align=right>306</td><td>EMA z-score MR</td></tr>
+<tr><td>PAPER_LANTERNS</td><td align=right>4.0</td><td align=right>1.51</td><td align=right>−0.50</td><td align=right>0.15</td><td align=right>181</td><td>Trend (rolling line)</td></tr>
+<tr><td>TELLURIUM</td><td align=right>9.7</td><td align=right>5.84</td><td align=right>−0.01</td><td align=right>1.22</td><td align=right>1,185</td><td>Trend (swing breakout)</td></tr>
+<tr><td>FRUIT_BASKET</td><td align=right>6.0</td><td align=right>7.95</td><td align=right>0.00</td><td align=right>0.97</td><td align=right>1,744</td><td>Trend (EMA crossover)</td></tr>
+</tbody></table>
+<p><em>Table 1. Order-book statistics from the portal backtest (prices in COINS; Δ<sub>n</sub> = n-tick mid change).</em></p>
+<p><code>AMETHYST</code> is pinned (range 1, VR<sub>100</sub> = 0.01), so the only edge is the spread. <code>TOFFEE_CAKE</code> pairs the widest spread with clear reversion (ρ<sub>1</sub> = −0.23, VR<sub>100</sub> = 0.45). <code>TELLURIUM</code> and <code>FRUIT_BASKET</code> have the largest volatility and ranges (1,185 and 1,744 COINS), so holding through a drift earns far more than the half-spread paid. <code>PAPER_LANTERNS</code> bounces tick-to-tick (ρ<sub>1</sub> = −0.50) yet travels 181 COINS a day, hence a 50-tick regression slope. <code>PEANUT_BUTTER</code>, <code>MANGOSTEEN</code> and <code>JELLY</code> revert on the slower EMA-anchor horizon (half-life 500–3000 ticks).</p>
+<p>Table 2 lists each module and its parameters.</p>
+<table style="page-break-inside:auto">
+<thead>
+<tr>
+<th>Product(s)</th>
+<th>Module</th>
+<th>Key parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AMETHYST</td>
+<td>Fixed-fair maker</td>
+<td>fair 10000, cap 50, clip 5</td>
+</tr>
+<tr>
+<td>PINK_PEARLS</td>
+<td>Implied-fair passive maker</td>
+<td>fair = 50,000 − other four mids; fair ± 2, skew 2q/20, never crosses touch, cap 20</td>
+</tr>
+<tr>
+<td>GOLDEN_PEARLS</td>
+<td>Avellaneda–Stoikov-style maker <sup class="ref">[2]</sup></td>
+<td>EMA fair (hl 20), r = fair − 2q/20, half-width max(1, σ), size 10, ±10 budget</td>
+</tr>
+<tr>
+<td>VOUCHER_7000–7900 (8)</td>
+<td>Smile relative value</td>
+<td>thr 7.0, min 4 fitted strikes, r = 0, sweeps levels ≥ 7 through fair, cap 50 each</td>
+</tr>
+<tr>
+<td>PEANUT_BUTTER</td>
+<td>EMA z-score MR, frozen-anchor exit</td>
+<td>anchor_hl 500, sd_hl 1000, warm-up 300, z 2, max hold 1000, cap 50</td>
+</tr>
+<tr>
+<td>MANGOSTEEN</td>
+<td>EMA z-score MR</td>
+<td>hl 500, z 2, cap 40</td>
+</tr>
+<tr>
+<td>PAPER_LANTERNS</td>
+<td>Rolling-line trend with hysteresis</td>
+<td>window 50, entry 0.05, exit 0.02, fair gate on, forecast horizon 50, cap 50</td>
+</tr>
+<tr>
+<td>TELLURIUM</td>
+<td>Swing-breakout trend</td>
+<td>threshold 10, cap 40</td>
+</tr>
+<tr>
+<td>FRUIT_BASKET</td>
+<td>Own-price EMA-crossover trend</td>
+<td>fast hl 50, slow hl 200, entry band = half-spread, warm-up 500, cap 40</td>
+</tr>
+<tr>
+<td>TOFFEE_CAKE, JELLY</td>
+<td>Blended MR</td>
+<td>5000 ± 40 / 2000 ± 80; EMA hl 3000, z 2; cap 25 + 25; best level only</td>
+</tr>
+</tbody>
+</table>
+<p><em>Table 2. Modules and key parameters (caps in lots; hl = EMA half-life in ticks).</em></p>
+<h3>2.2 Market making</h3>
+<p><code>AMETHYST</code> and the pearls trade around values that are constant or recoverable from related books, so the edge is providing liquidity. <code>PINK_PEARLS</code> uses fair = 50,000 minus the other four pearls' mids (Section 5), quotes passively at fair ± 2 with skew 2q/20 and never crosses the touch. <code>GOLDEN_PEARLS</code> uses an EMA fair value (half-life 20) and an inventory-shifted reservation price in the spirit of Avellaneda–Stoikov <sup class="ref">[2]</sup>, r = fair − 2q/20 (skew 2; 20 = official limit; the γqσ² term is inactive, γ = 0), quoted at half-width max(1, σ), size 10, within an outer ±10 inventory budget and with no cross-tick pending management.</p>
+<h3>2.3 Voucher smile relative value</h3>
+<p>Voucher prices across strikes should lie on one smooth volatility smile; a strike that deviates from it is likely mispriced. Using the Black–Scholes call <sup class="ref">[1]</sup> with r = 0 written in total volatility w = σ√T,</p>
+<p class="eq"><img class="eqimg" src="figs/eq/bs.svg" alt="equation"></p>
+
+<p>we solve each strike's implied w<sub>k</sub> by safeguarded Newton, then fit a least-squares quadratic in moneyness x = ln(K/S), <strong>leaving the target strike out</strong>:</p>
+<p class="eq"><img class="eqimg" src="figs/eq/smile.svg" alt="equation"></p>
+
+<p>We buy when fair<sub>k</sub> − ask ≥ 7.0 and sell when bid − fair<sub>k</sub> ≥ 7.0, sweeping every book level that qualifies. Leaving the target out stops a mispriced strike from pulling the smile toward itself. A strike is traded only if at least four other strikes have a valid implied volatility; with r = 0 the price depends on T only through w, so only current quotes are needed (Figure 2). All eight interior strikes reached their 50-lot cap on every day.</p>
+<figure ><img src="figs/fig_smile.png" style="max-width:75%;max-height:1.75in"><figcaption style="font-size:9pt;font-style:italic">Figure 2. One portal tick (day −2): implied total volatility w by strike, the quadratic smile fitted without VOUCHER_7900, and the 7900 strike (red) sitting above it; our strategy sold it (edge 17.4 vs threshold 7.0). Only strikes 7000–7900 are shown; valid wing quotes (VOUCHER_6800/8100) are also used in the fit.</figcaption></figure>
+<h3>2.4 Lagged-anchor mean reversion</h3>
+<p><code>PEANUT_BUTTER</code> and <code>MANGOSTEEN</code> oscillate around a slowly moving level. We measure deviation from a lagged EMA anchor and scale it by an EWMA volatility (for <code>PEANUT_BUTTER</code>, anchor half-life 500 ticks and volatility half-life 1000 ticks):</p>
+<p class="eq"><img class="eqimg" src="figs/eq/z.svg" alt="equation"></p>
+
+<p>For <code>PEANUT_BUTTER</code> the exit target is the anchor frozen at entry, so a drifting EMA cannot move the take-profit level away from the trade, and a maximum holding time caps exposure if reversion fails (Figure 3). No stop-loss is used: on <code>PEANUT_BUTTER</code> every stop variant we tested had a negative net.</p>
+<figure><img src="figs/fig_pb_zscore.png" style="max-width:100%;max-height:1.4in"><figcaption style="font-size:9pt;font-style:italic">Figure 3. PEANUT_BUTTER, day −2: mid price, lagged EMA anchor and our fills (top); z-score with the ±2 entry bands (bottom).</figcaption></figure>
+<h3>2.5 Trend following</h3>
+<p><code>PAPER_LANTERNS</code>, <code>TELLURIUM</code> and <code>FRUIT_BASKET</code> show persistent intraday drifts that mean-reversion modules would fight. <code>PAPER_LANTERNS</code> uses the slope of a rolling linear fit with separate entry and exit bands (hysteresis), avoiding flips around a single threshold. A fair gate filters entries: the forecast exit level is the fitted value now plus 50 ticks of slope, and a level is taken only if this forecast beats the price by more than half the current spread. <code>TELLURIUM</code> enters on a break of the last confirmed swing high or low, using only already-confirmed pivots, so no future data is used. <code>FRUIT_BASKET</code> trades its own mid with an EMA crossover: d<sub>t</sub> = EMA<sub>50</sub> − EMA<sub>200</sub> (half-lives in ticks, both from prior ticks). After a 500-tick warm-up it targets +40 lots when d<sub>t</sub> exceeds half the bid–ask spread and −40 when it is below minus half the spread, and goes flat once d<sub>t</sub> changes sign against the position. Figure 4 shows the two illustrated modules.</p>
+<figure><img src="figs/fig_trend_examples.png" style="max-width:100%;max-height:1.4in"><figcaption style="font-size:9pt;font-style:italic">Figure 4. Trend modules on the portal data: TELLURIUM swing-breakout position (day −2) and FRUIT_BASKET EMA-crossover position (day −1), each against its mid price.</figcaption></figure>
+<h3>2.6 Blended mean reversion</h3>
+<p><code>TOFFEE_CAKE</code> and <code>JELLY</code> revert around stable centres on the observed days, but a fixed centre is fragile if the level shifts. Each cap is split into two 25-lot legs: a fixed-centre leg trading 5000 ± 40 (<code>TOFFEE_CAKE</code>) or 2000 ± 80 (<code>JELLY</code>), and an adaptive leg trading |z| ≥ 2 around an EMA anchor (half-life 3000). We shifted price levels (±100 <code>TOFFEE_CAKE</code>, ±200 <code>JELLY</code>) and added jumps and drifts (Figure 5). A fixed centre loses its edge under a level shift (worst case −6,496); an adaptive EMA3000 centre is robust (worst −1,105) but keeps only 74% of normal profit; the 25 + 25 blend keeps 92% (72.8k vs 78.9k, two days, earlier development run; the final version, with different code and execution, earns <span style="white-space:nowrap">39,063 + 37,526 = 76,589</span>) with a worst case of −3,419. Stop-losses made every variant worse, so there are none. Trading at the best level only saved 7.8k in spread and added 6.1k net over three days.</p>
+<figure><img src="figs/fig3_centre_models.png" style="max-width:100%;max-height:1.35in"><figcaption style="font-size:9pt;font-style:italic">Figure 5. Fixed, adaptive and blended centres under normal days and simulated level shifts, jumps and drifts.</figcaption></figure>
+<h3>2.7 Execution</h3>
+<p>A shared helper converts the gap between target and position into orders and reserves capacity for orders that may still be working on the same side (R<sub>buy</sub>, R<sub>sell</sub>), so the limit L is never breached even when fills arrive late (<code>GOLDEN_PEARLS</code> is the exception: it has no cross-tick pending-order management and relies on its ±10 inventory budget). Orders live one tick, so the cross-tick reservation is a conservative choice that can waste some capacity:</p>
+<p class="eq">Q<sub>buy</sub> ≤ max(0, L − q − R<sub>buy</sub>), &nbsp;&nbsp; Q<sub>sell</sub> ≤ max(0, L + q − R<sub>sell</sub>).</p>
+<p>Options sweep every book level at least 7 COINS through fair value; all other directional modules trade at the best level only, and the three makers rest passive quotes. Of 67,548 lots traded on the Portal (7,442 fills), 97.8% were aggressive; the makers' 1,504 lots were all passive and filled 1.51 (<code>AMETHYST</code>), 1.12 (<code>GOLDEN_PEARLS</code>) and 0.06 (<code>PINK_PEARLS</code>) COINS better than mid. Directional products touched their caps every day, while the makers peaked at 38 / 17 / 8 lots, well inside their limits.</p>
+<h2>3. Risk Management</h2>
+<h3>3.1 Intraday drawdown kill switch</h3>
+<p>The switch covers the three trend products. It tracks each product's intraday PnL from our own fills (positions marked at mid) and its running peak:</p>
+<p class="eq"><img class="eqimg" src="figs/eq/kill.svg" alt="equation"></p>
+<p>The kill-switch thresholds θ<sub>p</sub> are 20,275.5 / 40,680 / 765 COINS for <code>TELLURIUM</code> / <code>FRUIT_BASKET</code> / <code>PAPER_LANTERNS</code>, 1.5× the largest intraday drawdown on development days −2 and −1. Once triggered, the product is flattened across the touch and receives no more orders that day; the flatten size subtracts possibly-working same-side orders, so it never crosses zero:</p>
+<p class="eq"><img class="eqimg" src="figs/eq/flat.svg" alt="equation"></p>
+<p>We compared multipliers 0.5×–3× and graded variants (halve, then stop) by two costs: profit missed when the price rebounds versus losses saved when the move continues (Figure 6). In a synthetic development experiment on an early prototype (60 stress days; not an independent validation of the final version) we chose 1.5× to balance retained historical profit and synthetic downside, rather than to maximize net benefit (1.5×: mean <span style="white-space:nowrap">−5,132</span>, worst day <span style="white-space:nowrap">−135,696</span>; 2.0×: mean <span style="white-space:nowrap">−4,427</span>, worst day <span style="white-space:nowrap">−145,745</span>). It did not fire on any of the three real days; 1.25× would have cut about 18k of real profit on day 0, and tighter thresholds 45k–187k. Graded protection halves the false-trigger cost but saves less, so its net is lower. In synthetic stress the switch cut the average daily loss from 44k to 5k and the worst-day loss from 437k to 136k. Mean-reversion modules deliberately have no kill switch: on <code>PEANUT_BUTTER</code> every stop variant had a negative net.</p>
+<figure><img src="figs/fig4_killswitch.png" style="max-width:100%;max-height:2.45in"><figcaption style="font-size:9pt;font-style:italic">Figure 6. Kill-switch calibration by multiplier: missed rebound profit vs saved loss. ‘real’ labels show historical profit forgone versus no guard across days −2, −1 and 0; k denotes 1,000 COINS.</figcaption></figure>
+<h3>3.2 Execution safety and safeguards</h3>
+<p>With the switch forced to fire under 1–3 tick order delays and duplicate callbacks, the flatten never crosses zero or reopens, and each own fill is booked once (de-duplicated by timestamp).</p>
+<div><p style="margin:3pt 0;break-after:avoid;page-break-after:avoid"><em>Table 3. Safeguards and residual exposure.</em></p><table><thead><tr><th style="width:40%">Safeguard</th><th style="width:27%">What it controls</th><th>What remains exposed</th></tr></thead><tbody>
+<tr><td>Hard position caps (10–50 lots) + order reservation (not GOLDEN_PEARLS)</td><td>Limit breaches from late or pending fills</td><td>Full-cap exposure in a regime break</td></tr>
+<tr><td>Kill switch (trend products)</td><td>Intraday loss after a trend reversal</td><td>Realized loss can exceed the threshold when depth is thin</td></tr>
+<tr><td>Blended centres (TOFFEE_CAKE, JELLY)</td><td>Level shifts away from the fixed centre</td><td>Half the cap still on the fixed leg</td></tr>
+<tr><td>Duplicate-callback guard, fill de-duplication</td><td>Double-counting state and own fills</td><td>Not assessed</td></tr>
+<tr><td>Compact <code>traderData</code>, per-module <code>try/except</code></td><td>State loss; one failure stopping all products</td><td>A failing module stops trading its product</td></tr>
+</tbody></table></div>
+
+<h2>4. Results</h2>
+<p>All 18 traded products are positive; 53 of 54 product-days are positive (the only loss is <code>MANGOSTEEN</code> on day −2, <span style="white-space:nowrap">−538 COINS</span>). Daily PnL falls from day −2 to day 0, mainly in the trend family, from 96,222 to 29,884 COINS (Figure 7).</p>
+<div style="display:flex;gap:12pt;align-items:center;margin-top:-4pt;break-inside:avoid;page-break-inside:avoid"><div style="flex:0 0 44%"><p style="margin:0 0 2pt"><em>Table 4. Portal PnL by family, days −2 to 0.</em></p>
+<table style="width:100%;margin:2pt 0"><thead><tr><th>Family</th><th style="text-align:right">PnL (COINS)</th><th style="text-align:right">Share</th></tr></thead><tbody>
+<tr><td>Trend following</td><td align=right>217,532</td><td align=right>41.6%</td></tr>
+<tr><td>Voucher smile RV</td><td align=right>120,129</td><td align=right>23.0%</td></tr>
+<tr><td>Blended MR</td><td align=right>104,202</td><td align=right>19.9%</td></tr>
+<tr><td>EMA-anchor MR</td><td align=right>76,259</td><td align=right>14.6%</td></tr>
+<tr><td>Market making</td><td align=right>5,069.5</td><td align=right>1.0%</td></tr>
+<tr><td><strong>Total</strong></td><td align=right><strong>523,191.5</strong></td><td align=right>100%</td></tr></tbody></table></div><div style="flex:1"><figure style="margin:0"><img src="figs/fig2_family_by_day.png" style="max-width:100%;max-height:1.35in"><figcaption style="font-size:9pt;font-style:italic">Figure 7. PnL (thousand COINS) by strategy family and day.</figcaption></figure></div></div>
+<h2>5. Breadth: Untraded Products</h2>
+<ul>
+<li><strong>Pearls.</strong> The five pearls' mids sum to about 50,000 (s.d. about 5 on both development days). WHITE/BLACK/BLUE moves offset each other within the same tick, with follow-through under 1 point against spreads of 4–8; none of 13 standalone models passed validation. We exploit the relation on <code>PINK_PEARLS</code> instead: fair = 50,000 minus the other four mids cuts its residual s.d. from 41–56 to about 5.</li>
+<li><strong>LYCHEE</strong> is the option model's spot input. Voucher flow leads it by about 1.1 points, below the ~2-point half-spread.</li>
+<li><strong>DRAGONFRUIT / GRANADILLA.</strong> Trend profit came from few episodes; market making failed at one-tick delay.</li>
+<li><strong>VOUCHER_6800 / 8100.</strong> Poor wing fit and losses on development days; they still inform the smile fit.</li>
+</ul>
+<h2>6. Local Backtester Alignment</h2>
+<p>We aligned our local backtester with the official Portal (days −2/−1/0 summed, one-tick order lifetime, the <code>traderData</code> size cap and fill de-duplication), after which our local replay matched the Portal exactly.</p>
+<h2>7. Limitations and Next Steps</h2>
+<p>All results are in-sample (all three days were reused); <code>TELLURIUM</code> is parameter-sensitive (thresholds 10 / 20 / 40 gave 95k / 14k / 46k over three days), one reason the kill switch covers it. Candidates were also replayed pessimistically (strict passive fills, half passive volume, 1 COIN per lot).</p>
+<div style="break-inside:avoid"><p style="margin:3pt 0"><em>Table 5. Main exposures and next steps.</em></p><table><thead><tr><th style="width:22%">Exposure</th><th style="width:42%">Why</th><th>Next step</th></tr></thead><tbody>
+<tr><td>Trend concentration (41.6% of PnL)</td><td>Edge needs persistent drifts; trend PnL fell 96,222 → 29,884</td><td>Scale kill-switch thresholds and entries to rolling volatility</td></tr>
+<tr><td>Parameter selection on three days</td><td>TELLURIUM threshold, basket model chosen in-sample</td><td>Validate on new days; prefer flatter parameter regions</td></tr>
+<tr><td>Spread cost</td><td>97.8% of lots cross the spread</td><td>Passive entry where the signal horizon allows</td></tr>
+<tr><td>Unhedged vouchers</td><td>Eight strikes at cap move together with LYCHEE</td><td>Delta-hedge with LYCHEE; revisit wing strikes</td></tr>
+<tr><td>Fixed thresholds and centres</td><td>Kill switch may fire early/late; fixed legs fragile to level shifts</td><td>Volatility-scaled bands; adaptive weight on the blend</td></tr>
+</tbody></table></div>
+<div style="break-inside:avoid"><h2 style="margin-top:6px">References</h2>
+<p style="font-size:9pt;margin:2px 0">[1] F. Black and M. Scholes, "The Pricing of Options and Corporate Liabilities," <i>Journal of Political Economy</i>, 81(3), 637–654, 1973.</p>
+<p style="font-size:9pt;margin:2px 0">[2] M. Avellaneda and S. Stoikov, "High-frequency trading in a limit order book," <i>Quantitative Finance</i>, 8(3), 217–224, 2008.</p>
+</div>
+</body></html>
